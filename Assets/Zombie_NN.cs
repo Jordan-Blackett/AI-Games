@@ -5,7 +5,7 @@ using UnityEngine;
 public class Zombie_NN : MonoBehaviour {
 
     private bool initilized = false;
-    private Transform player;
+    public Transform player;
     private NeuralNetwork net;
 
     private Rigidbody rBody;
@@ -13,8 +13,15 @@ public class Zombie_NN : MonoBehaviour {
 
     float movementSpeed = 5.5f;
 
+    public float initdistance = 0;
+
     Collider col;
-    public float[] inp;
+    private float[] inp;
+
+    bool dead = false;
+
+    public float[] debugInputs = new float[7];
+    public float debugValue2;
 
     void Start()
     {
@@ -32,15 +39,14 @@ public class Zombie_NN : MonoBehaviour {
 
     void FixedUpdate()
     {
-        if (initilized == true)
+        if (initilized == true && !dead)
         {
-            float distance = Vector2.Distance(transform.position, player.position);
-            if (distance > 20f)
-                distance = 20f;
+            float distance = Vector3.Distance(this.transform.position, player.position);
+
             //for (int i = 0; i < mats.Length; i++)
             //    mats[i].color = new Color(distance / 20f, (1f - (distance / 20f)), (1f - (distance / 20f)));
 
-            float[] inputs = new float[8];
+            float[] inputs = new float[7];
 
             // Dir
             // Gets a vector that points from the player's position to the target's.
@@ -88,71 +94,66 @@ public class Zombie_NN : MonoBehaviour {
                 }
 
                 //if (inp[i] > 0)
-                //// Draw the feelers in the Scene mode
-                //Debug.DrawRay(transform.position, feeler[i] * 10, Color.green);
+                //    Debug.DrawRay(transform.position, feeler[i] * 10, Color.green);
                 //else
                 // Draw the feelers in the Scene mode
                 Debug.DrawRay(transform.position, feeler[i] * 10, Color.red);
             }
 
             inputs[0] = direction.x;
-            inputs[1] = direction.y;
-            inputs[2] = direction.z;
-            inputs[3] = inp[0];
-            inputs[4] = inp[1];
-            inputs[5] = inp[2];
-            inputs[6] = inp[3];
-            inputs[7] = inp[4];
+            inputs[1] = direction.z;
+            inputs[2] = inp[0];
+            inputs[3] = inp[1];
+            inputs[4] = inp[2];
+            inputs[5] = inp[3];
+            inputs[6] = inp[4];
+
+            debugInputs[0] = direction.x;
+            debugInputs[1] = direction.z;
+            debugInputs[2] = inp[0];
+            debugInputs[3] = inp[1];
+            debugInputs[4] = inp[2];
+            debugInputs[5] = inp[3];
+            debugInputs[6] = inp[4];
 
             float[] output = net.FeedForward(inputs);
 
             rBody.velocity = movementSpeed * transform.forward;
 
             Vector3 av = new Vector3();
-            av.y = 500f * output[0];
+            av.y = 500f * output[0]; //500
             rBody.angularVelocity = av;
 
+            //Vector3 rot = new Vector3();
+            //rot.y = output[0] * 360;
+            //this.transform.Rotate(rot);
+
             // Fitness
-            net.AddFitness(distance);
+            net.AddFitness(initdistance - distance);
         }
     }
 
     // For when we collide with the walls
     void OnTriggerEnter(Collider col)
     {
-        //Debug.Log(col.tag);
-        // 
         if (col.tag == "Environment")
         {
-            //Debug.Log("Dead");
+            net.SetFitness(0);
             Die();
         }
 
         if (col.tag == "Player")
         {
-            //Debug.Log("Dead");
-            net.AddFitness(1000000);
+            net.AddFitness(10000);
             Die();
         }
-
-        // 
-        //if (col.tag == "Point")
-        //{
-        //    if (!stLap && col.name == "startPoint")
-        //    {
-        //        stLap = true;
-        //    }
-        //    else if (stLap && col.name == "endPoint")
-        //    {
-        //        lap.x++;
-        //        stLap = false;
-        //    }
-        //}
     }
 
     public void Die()
     {
+
         movementSpeed = 0;
+        //dead = true;
         //ended = true;
         //tag = "Passive";
         //GetComponent<CapsuleCollider>().enabled = false;
@@ -162,7 +163,7 @@ public class Zombie_NN : MonoBehaviour {
         // Remove self from All Forrest Attempts Controller Listings
         //C.allFatt.Remove(this);
         //Destroy(this);
-       // CheckIfLast();
+        // CheckIfLast();
     }
 
     public void Init(NeuralNetwork net, Transform player)
@@ -170,5 +171,6 @@ public class Zombie_NN : MonoBehaviour {
         this.player = player;
         this.net = net;
         initilized = true;
+        initdistance = Vector3.Distance(new Vector3(0, 0, 0), player.position);
     }
 }

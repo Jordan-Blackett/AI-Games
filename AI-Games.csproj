@@ -236,8 +236,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Ally_Utility.cs" />
+    <Compile Include="Assets\FighterManager.cs" />
     <Compile Include="Assets\Init_Grid.cs" />
     <Compile Include="Assets\NeuralNetwork.cs" />
+    <Compile Include="Assets\NeuralNetwork_ZombieChase\Fighter_NN.cs" />
     <Compile Include="Assets\Npc_NN.cs" />
     <Compile Include="Assets\Npc_NN_Manager.cs" />
     <Compile Include="Assets\Player_Health.cs" />
@@ -247,6 +249,12 @@
     <Compile Include="Assets\Scripts\PlayerShooting.cs" />
     <Compile Include="Assets\Scripts\Zombie_AI.cs" />
     <Compile Include="Assets\Scripts\Zombie_Utility_AI.cs" />
+    <Compile Include="Assets\Stuff\Grid.cs" />
+    <Compile Include="Assets\Stuff\Heap.cs" />
+    <Compile Include="Assets\Stuff\Node.cs" />
+    <Compile Include="Assets\Stuff\PathFinding.cs" />
+    <Compile Include="Assets\Stuff\PathRequestManager.cs" />
+    <Compile Include="Assets\Stuff\Unit.cs" />
     <Compile Include="Assets\Waypoint_Debug.cs" />
     <Compile Include="Assets\Waypoint_Debug_Connected.cs" />
     <Compile Include="Assets\Zombie_Move.cs" />

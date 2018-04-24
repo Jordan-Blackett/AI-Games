@@ -7,7 +7,7 @@ public class ZombieChaseManager : MonoBehaviour {
     public GameObject zombiePrefab;
     public GameObject player;
 
-    private int[] layers = new int[] { 8, 5, 5, 1 }; //1 input and 1 output
+    private int[] layers = new int[] { 7, 5, 5, 1 }; //1 input and 1 output
     private List<NeuralNetwork> nets;
     private int populationSize = 50;
     public int generationNumber = 0;
@@ -18,6 +18,8 @@ public class ZombieChaseManager : MonoBehaviour {
     // UI
     public float highestScore = 0;
     public float highestScoreGen = 0;
+
+    public float[] debugValue = new float[50];
 
     void Timer()
     {
@@ -36,9 +38,14 @@ public class ZombieChaseManager : MonoBehaviour {
                 // Sort the units of the current population by their fitness ranking
                 nets.Sort();
 
-                if (nets[49].GetFitness() > highestScore)
+                for (int i = 0; i < populationSize; i++)
                 {
-                    highestScore = nets[49].GetFitness();
+                    debugValue[i] = nets[i].GetFitness();
+                }
+
+                if (nets[nets.Count - 1].GetFitness() > highestScore)
+                {
+                    highestScore = nets[nets.Count - 1].GetFitness();
                     highestScoreGen = generationNumber;
                 }
 
@@ -67,19 +74,20 @@ public class ZombieChaseManager : MonoBehaviour {
                     // create 15 offsprings as a crossover products of two random winners
                     else if (i < 25 && i >= 10)
                     {
-                        int randomIndex = Random.Range(0, 10);
-                        int randomIndex2 = Random.Range(0, 10);
+                        int randomIndex = Random.Range(39, 49);
+                        int randomIndex2 = Random.Range(39, 49);
                         float[] parentA = nets[randomIndex].WeigtsToArray();
                         float[] parentB = nets[randomIndex2].WeigtsToArray();
                         float[] offspring = nets[i].crossOver(parentA, parentB);
                         nets[i].ReadWeights(offspring);
                     }
-                    // create 10 offsprings as a direct copy of two random winners
+                    // create 10 offsprings as a direct copy of two random winners + random mutate
                     else if (i < 10)
                     {
-                        int randomIndex = Random.Range(0, 10);
-                        // Deepcopy
-                        //nets[i] = new NeuralNetwork(nets[randomIndex]);
+                        int randomIndex = Random.Range(39, 49);
+                        float[] parentA = nets[randomIndex].WeigtsToArray();
+                        nets[i].ReadWeights(parentA);
+                        nets[i].Mutate();
                     }
 
                     nets[i].SetFitness(0f);
@@ -91,7 +99,7 @@ public class ZombieChaseManager : MonoBehaviour {
             generationNumber++;
 
             isTraning = true;
-            Invoke("Timer", 10f);
+            Invoke("Timer", 15f);
             InitZombies();
         }
     }

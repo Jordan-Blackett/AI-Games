@@ -79,7 +79,6 @@ public class NeuralNetwork : IComparable<NeuralNetwork>
     /// </summary>
     private void InitWeights()
     {
-
         List<float[][]> weightsList = new List<float[][]>(); //weights list which will later will converted into a weights 3D array
 
         //itterate over all neurons that have a weight connection
@@ -135,6 +134,7 @@ public class NeuralNetwork : IComparable<NeuralNetwork>
                     value += weights[i - 1][j][k] * neurons[i - 1][k]; //sum off all weights connections of this neuron weight their values in previous layer
                 }
 
+                //Hyperbolic tangen doesnt requre a bias
                 neurons[i][j] = (float)Math.Tanh(value); //Hyperbolic tangent activation
             }
         }
@@ -156,7 +156,7 @@ public class NeuralNetwork : IComparable<NeuralNetwork>
                     float weight = weights[i][j][k];
 
                     //mutate weight value 
-                    float randomNumber = UnityEngine.Random.Range(0f, 100f);
+                    float randomNumber = UnityEngine.Random.Range(0f, 100f); // 100
 
                     if (randomNumber <= 2f)
                     { //if 1
